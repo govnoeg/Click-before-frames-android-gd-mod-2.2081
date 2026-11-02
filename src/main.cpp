@@ -1,3 +1,4 @@
+
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PauseLayer.hpp>
 #include <Geode/modify/PlayLayer.hpp>
@@ -14,9 +15,11 @@ class $modify(CBFPlayLayer, PlayLayer) {
     void setupHasCompleted() {
         PlayLayer::setupHasCompleted();
         cbf::input::clearPending();
+
         if (cbf::config::levelMemory()) {
             cbf::config::loadCurrentLevelProfile();
         }
+
         cbf::input::onLevelLoaded();
     }
 
@@ -31,7 +34,10 @@ class $modify(CBFPlayLayer, PlayLayer) {
     }
 
     void pauseGame(bool paused) {
-        if (paused) cbf::input::clearPending();
+        if (paused) {
+            cbf::input::clearPending();
+        }
+
         PlayLayer::pauseGame(paused);
     }
 
@@ -51,28 +57,36 @@ class $modify(CBFPlayLayer, PlayLayer) {
     }
 };
 
-// Intercept the real player input calls. The engine only consumes an event
-// when a delay is required; dispatching delayed events uses a re-entry guard
-// so the original game method is called exactly once.
+// Intercept real player input calls.
 class $modify(CBFPlayerObject, PlayerObject) {
     bool pushButton(PlayerButton button) {
-        if (cbf::input::intercept(this, button, true)) return true;
+        if (cbf::input::intercept(this, button, true)) {
+            return true;
+        }
+
         return PlayerObject::pushButton(button);
     }
 
     bool releaseButton(PlayerButton button) {
-        if (cbf::input::intercept(this, button, false)) return true;
+        if (cbf::input::intercept(this, button, false)) {
+            return true;
+        }
+
         return PlayerObject::releaseButton(button);
     }
 };
 
-// processCommands is called by the game for its simulation steps. Counting
-// these calls makes the configured delay independent of the display FPS.
+// Count game simulation steps independently of display FPS.
 class $modify(CBFBaseGameLayer, GJBaseGameLayer) {
     void processCommands(float dt, bool isHalfTick, bool isLastTick) {
-        if (PlayLayer::get() == this) {
+        auto* playLayer = PlayLayer::get();
+
+        if (playLayer &&
+            static_cast<GJBaseGameLayer*>(playLayer) ==
+            static_cast<GJBaseGameLayer*>(this)) {
             cbf::input::advanceGameStep();
         }
+
         GJBaseGameLayer::processCommands(dt, isHalfTick, isLastTick);
     }
 };
@@ -86,6 +100,7 @@ class $modify(CBFPauseLayer, PauseLayer) {
         }
 
         auto rightMenu = this->getChildByID("right-button-menu");
+
         if (!rightMenu) {
             log::warn("CBF: right-button-menu was not found; pause button was not added.");
             return;
@@ -93,16 +108,23 @@ class $modify(CBFPauseLayer, PauseLayer) {
 
         auto resource = Mod::get()->getResourcesDir() / "cbf-button.png";
         auto sprite = CCSprite::create(resource.string().c_str());
+
         if (!sprite) {
             log::error("CBF: failed to load resources/cbf-button.png");
             return;
         }
 
         sprite->setScale(0.36f);
+
         auto button = CCMenuItemSpriteExtra::create(
-            sprite, this, menu_selector(CBFPauseLayer::onOpenCBF)
+            sprite,
+            this,
+            menu_selector(CBFPauseLayer::onOpenCBF)
         );
-        if (!button) return;
+
+        if (!button) {
+            return;
+        }
 
         button->setID("cbf-open-button"_spr);
         rightMenu->addChild(button);
