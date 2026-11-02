@@ -1,3 +1,4 @@
+
 #include "CBFPopup.hpp"
 #include "CBFConfig.hpp"
 #include "CBFInputEngine.hpp"
@@ -209,7 +210,7 @@ void CBFPopup::refresh() {
     auto updateToggle = [](CCMenuItemLabel* button, bool enabled) {
         if (button) {
             button->setString(enabled ? "ON" : "OFF");
-            button->setColor(enabled ? cc3(30, 225, 255) : cc3(180, 180, 205));
+            button->setColor(enabled ? ccc3(30, 225, 255) : ccc3(180, 180, 205));
         }
     };
     updateToggle(m_lowLatencyButton, cbf::config::lowLatency());
@@ -233,10 +234,9 @@ void CBFPopup::setTab(int tab) {
     for (int i = 0; i < 6; ++i) {
         if (m_pages[i]) m_pages[i]->setVisible(i == m_tab);
         if (m_tabButtons[i]) {
-            m_tabButtons[i]->setColor(i == m_tab ? cc3(35, 220, 255) : cc3(185, 175, 220));
+            m_tabButtons[i]->setColor(i == m_tab ? ccc3(35, 220, 255) : ccc3(185, 175, 220));
         }
     }
-
 }
 
 void CBFPopup::onTab(CCObject* sender) {
