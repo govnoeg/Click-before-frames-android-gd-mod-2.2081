@@ -1,0 +1,34 @@
+{
+  "geode": "5.9.0",
+  "gd": {
+    "android": "2.2081"
+  },
+  "id": "netermindteam.clickbeforeframes",
+  "name": "Click Before Frames",
+  "version": "v0.3.0",
+  "developer": "NetermindTeam",
+  "description": "Frame-based click delay with per-level learned input timing memory.",
+  "links": {
+    "source": "https://github.com/NetermindTeam/ClickBeforeFrames"
+  },
+  "tags": [
+    "gameplay",
+    "utility"
+  ],
+  "dependencies": {
+    "geode.node-ids": ">=v1.23.3"
+  },
+  "resources": {
+    "files": [
+      "resources/*"
+    ]
+  },
+  "settings": {
+    "enabled": {
+      "name": "Show CBF pause-menu button",
+      "description": "Show or hide the Click Before Frames button in the pause menu. Input timing remains active.",
+      "type": "bool",
+      "default": true
+    }
+  }
+}
