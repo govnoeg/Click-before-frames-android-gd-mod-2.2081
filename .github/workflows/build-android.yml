@@ -8,14 +8,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     container:
       image: prevter/geode-sdk:android-5.9.0
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Geode CLI profile
+        shell: bash
+        run: |
+          export CLI_PROFILE="$GITHUB_WORKSPACE/cli-profile"
+          mkdir -p "$CLI_PROFILE/geode/mods"
+          geode profile add --name GithubActions "$CLI_PROFILE/GeometryDash.exe" win
+
       - name: Build Android64
-        run: geode build -p android64 --config Release -- -G Ninja
+        run: geode build -p android64 --config Release -- -G Ninja -DGEODE_DONT_INSTALL_MODS=ON
 
       - name: Upload .geode package
         uses: actions/upload-artifact@v4
